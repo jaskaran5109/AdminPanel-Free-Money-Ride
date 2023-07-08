@@ -1,4 +1,4 @@
-import { Box, Button, Grid, HStack, Heading, InputGroup, InputLeftElement, Table, TableCaption, TableContainer, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/react'
+import { Box, Button, Grid, HStack, Heading, Input, InputGroup, InputLeftElement, Table, TableCaption, TableContainer, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/react'
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
 import { AiFillDelete, AiTwotoneEdit } from 'react-icons/ai'
