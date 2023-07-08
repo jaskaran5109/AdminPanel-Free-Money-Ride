@@ -1,7 +1,8 @@
-import { Avatar, Box, Button, Divider, Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerFooter, DrawerHeader, DrawerOverlay, FormLabel, Grid, GridItem, HStack, Heading, Image, Input, InputGroup, InputLeftElement, Radio, RadioGroup, Select, Stack, Switch, Table, TableCaption, TableContainer, Tbody, Td, Textarea, Th, Thead, Tr, useDisclosure } from '@chakra-ui/react'
+import { Avatar, Box, Button, Divider, Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerFooter, DrawerHeader, DrawerOverlay, FormLabel, Grid, GridItem, HStack, Heading, Image, Input, InputGroup, InputLeftElement, Popover, PopoverArrow, PopoverBody, PopoverCloseButton, PopoverContent, PopoverHeader, PopoverTrigger, Radio, RadioGroup, Select, Stack, Switch, Table, TableCaption, TableContainer, Tbody, Td, Textarea, Th, Thead, Tooltip, Tr, useDisclosure } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
 import { AiFillDelete, AiTwotoneEdit } from 'react-icons/ai'
 import { BiSearchAlt } from 'react-icons/bi'
+import { BsThreeDotsVertical } from 'react-icons/bs'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { countryListAllIsoData } from '../GeoData'
@@ -165,7 +166,7 @@ const Offer = () => {
                         /></Button></HStack>
 
                 </HStack>
-                <HStack style={{ alignItems: "center",marginBottom:15 }}>
+                <HStack style={{ alignItems: "center", marginBottom: 15 }}>
                     <InputGroup>
                         <InputLeftElement
                             pointerEvents="none"
@@ -410,13 +411,25 @@ function Row({ item, offerDetailsHandler, loading, deleteOfferHandler, truncateC
                     >
                         <AiTwotoneEdit />
                     </Button>
-                    <Button
-                        isLoading={loading}
-                        color="puprle.600"
-                        onClick={() => deleteOfferHandler(item._id)}
-                    >
-                        <AiFillDelete />
-                    </Button>
+                    <Popover placement='left'>
+                        <PopoverTrigger>
+                            <Button >
+                                <BsThreeDotsVertical />
+                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent>
+                            <PopoverHeader style={{display:"flex",justifyContent:"space-between"}}>Actions</PopoverHeader>
+                            <PopoverArrow />
+                            <PopoverCloseButton />
+                            <PopoverBody><Button
+                                isLoading={loading}
+                                color="puprle.600"
+                                onClick={() => deleteOfferHandler(item._id)}
+                            >
+                                <AiFillDelete />
+                            </Button></PopoverBody>
+                        </PopoverContent>
+                    </Popover>
                 </HStack>
             </Td>
         </Tr>
