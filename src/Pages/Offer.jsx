@@ -1,7 +1,7 @@
-import { Avatar, Box, Button, Divider, Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerFooter, DrawerHeader, DrawerOverlay, FormLabel, Grid, GridItem, HStack, Heading, Image, Input, InputGroup, InputLeftElement, Popover, PopoverArrow, PopoverBody, PopoverCloseButton, PopoverContent, PopoverHeader, PopoverTrigger, Radio, RadioGroup, Select, Stack, Switch, Table, TableCaption, TableContainer, Tbody, Td, Textarea, Th, Thead, Tooltip, Tr, useDisclosure } from '@chakra-ui/react'
+import { Avatar, Box, Button, Divider, Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerFooter, DrawerHeader, DrawerOverlay, FormLabel, Grid, GridItem, HStack, Heading, Image, Input, InputGroup, InputLeftElement, Popover, PopoverArrow, PopoverBody, PopoverCloseButton, PopoverContent, PopoverHeader, PopoverTrigger, Radio, RadioGroup, Select, Spinner, Stack, Switch, Table, TableCaption, TableContainer, Tbody, Td, Textarea, Th, Thead, Tooltip, Tr, useDisclosure } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
 import { AiFillDelete, AiTwotoneEdit } from 'react-icons/ai'
-import { BiSearchAlt } from 'react-icons/bi'
+import { BiSearchAlt, BiSolidUserDetail } from 'react-icons/bi'
 import { BsThreeDotsVertical } from 'react-icons/bs'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
@@ -17,7 +17,8 @@ import { getAllOffers, updateOffer } from '../redux/actions/admin'
 
 const Offer = () => {
     const dispatch = useDispatch()
-    const { offers, loading: loading2 } = useSelector((state) => state.admin)
+
+    const { offers, loading: loading2, offerloading } = useSelector((state) => state.admin)
     const MAX_CELL_LENGTH = 30; // Maximum length of cell content before showing three dots
 
     const truncateCellContent = (content) => {
@@ -136,7 +137,9 @@ const Offer = () => {
         onClose()
     }
     const navigate = useNavigate()
-
+    const getOfferReports = (id) => {
+        navigate(`offer/report/${id}`)
+    }
 
     return (
         <Grid minH="100vh" templateColumns={['1fr']}>
@@ -195,7 +198,11 @@ const Offer = () => {
                 <TableContainer w={['100vw', 'full']}>
                     <Table variant="simple" size="md">
                         <TableCaption>
-                            All available Offers in the Database
+
+                            {!offerloading && <h1>All available Offers in the Database</h1>}
+                            {offerloading && <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px" alignSelf={"center"}>
+                                <Spinner size="xl" />
+                            </Box>}
                         </TableCaption>
                         <Thead>
                             <Tr >
@@ -214,7 +221,7 @@ const Offer = () => {
                             </Tr>
                         </Thead>
                         <Tbody>
-                            {offers && offers.filter(
+                            {!offerloading && offers && offers.filter(
                                 (item) =>
                                     item.offerName.toLowerCase().includes(searchName.toLowerCase()) &&
                                     item.externalId.toLowerCase().includes(searchAdvertiserId.toLowerCase())
@@ -227,6 +234,7 @@ const Offer = () => {
                                         offerDetailsHandler={offerDetailsHandler}
                                         deleteOfferHandler={deleteOfferHandler}
                                         loading={loading}
+                                        getOfferReports={getOfferReports}
                                         truncateCellContent={truncateCellContent}
                                     />
                                 )
@@ -242,7 +250,7 @@ const Offer = () => {
                     <DrawerOverlay />
                     <DrawerContent>
                         <DrawerCloseButton />
-                        <DrawerHeader>Money Free Ride</DrawerHeader>
+                        <DrawerHeader>Free Money Ride</DrawerHeader>
                         <Divider />
                         <DrawerBody>
                             <div style={{ display: "flex", justifyContent: "center", alignItems: "center", margin: '20px' }}>
@@ -384,7 +392,7 @@ const Offer = () => {
 export default Offer
 
 
-function Row({ item, offerDetailsHandler, loading, deleteOfferHandler, truncateCellContent }) {
+function Row({ item, offerDetailsHandler, loading, deleteOfferHandler, getOfferReports, truncateCellContent }) {
     return (
         <Tr>
             {/* <Td>{item.isEnabled === true ? "Active" : "Not Active"}</Td> */}
@@ -417,17 +425,27 @@ function Row({ item, offerDetailsHandler, loading, deleteOfferHandler, truncateC
                                 <BsThreeDotsVertical />
                             </Button>
                         </PopoverTrigger>
-                        <PopoverContent>
-                            <PopoverHeader style={{display:"flex",justifyContent:"space-between"}}>Actions</PopoverHeader>
+                        <PopoverContent style={{width:"100%"}}>
+                            <PopoverHeader style={{ display: "flex", justifyContent: "space-between" }}>Actions</PopoverHeader>
                             <PopoverArrow />
                             <PopoverCloseButton />
-                            <PopoverBody><Button
+                            <PopoverBody style={{display:"flex",justifyContent:"space-between",padding:10}}><Button
                                 isLoading={loading}
                                 color="puprle.600"
-                                onClick={() => deleteOfferHandler(item._id)}
+                                onClick={() => getOfferReports(item.externalId)}
+                                flex={1}
+                                marginRight={10}
                             >
-                                <AiFillDelete />
-                            </Button></PopoverBody>
+                                <BiSolidUserDetail />
+                            </Button>
+                                <Button
+                                    isLoading={loading}
+                                    color="puprle.600"
+                                    onClick={() => deleteOfferHandler(item._id)}
+                                    flex={1}
+                                >
+                                    <AiFillDelete />
+                                </Button></PopoverBody>
                         </PopoverContent>
                     </Popover>
                 </HStack>
@@ -435,3 +453,5 @@ function Row({ item, offerDetailsHandler, loading, deleteOfferHandler, truncateC
         </Tr>
     );
 }
+
+

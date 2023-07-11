@@ -68,5 +68,17 @@ export const userReducer = createReducer(
         clearMessage: state => {
             state.message = null;
         },
+
+        resetPasswordRequest: state => {
+            state.loading = true;
+        },
+        resetPasswordSuccess: (state, action) => {
+            state.loading = false;
+            state.message = action.payload;
+        },
+        resetPasswordFail: (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+        },
     }
 );

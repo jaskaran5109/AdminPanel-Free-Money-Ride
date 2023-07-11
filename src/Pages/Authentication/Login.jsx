@@ -36,6 +36,7 @@ export default function Login() {
                             onChange={e => setEmail(e.target.value)}
                             placeholder="Enter your email"
                             focusBorderColor="yellow.500"
+                            textTransform={'lowercase'}
                         />
                     </Box>
                     <Box my={'4'}>

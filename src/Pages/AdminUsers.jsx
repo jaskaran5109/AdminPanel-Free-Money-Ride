@@ -4,6 +4,7 @@ import {
     Grid,
     Heading,
     HStack,
+    Spinner,
     Table,
     TableCaption,
     TableContainer,
@@ -66,7 +67,11 @@ export const AdminUsers = ({ user }) => {
                     </Heading>
                     <TableContainer w={['100vw', 'full']}>
                         <Table variant="simple" size="lg">
-                            <TableCaption>All available Users in the Database</TableCaption>
+                            <TableCaption> 
+                            {!loading && <h1>All available Users in the Database</h1>}
+                            {loading && <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px" alignSelf={"center"}>
+                                <Spinner size="xl" />
+                            </Box>}</TableCaption>
                             <Thead>
                                 <Tr>
                                     <Th>Id</Th>
@@ -77,7 +82,7 @@ export const AdminUsers = ({ user }) => {
                                 </Tr>
                             </Thead>
                             <Tbody>
-                                {users &&
+                                {!loading && users &&
                                     users.map(item => (
                                         <Row
                                             item={item}

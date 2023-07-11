@@ -15,14 +15,14 @@ export const adminReducer = createReducer(
             state.error = action.payload;
         },
         getAllAppUsersRequest: state => {
-            state.loading = true;
+            state.appUserloading = true;
         },
         getAllAppUsersSuccess: (state, action) => {
-            state.loading = false;
+            state.appUserloading = false;
             state.user = action.payload;
         },
         getAllAppUsersFail: (state, action) => {
-            state.loading = false;
+            state.appUserloading = false;
             state.error = action.payload;
         },
         deleteUserRequest: state => {
@@ -49,14 +49,14 @@ export const adminReducer = createReducer(
         },
 
         getAllOfferRequest: state => {
-            state.loading = true;
+            state.offerloading = true;
         },
         getAllOfferSuccess: (state, action) => {
-            state.loading = false;
+            state.offerloading = false;
             state.offers = action.payload;
         },
         getAllOfferFail: (state, action) => {
-            state.loading = false;
+            state.offerloading = false;
             state.error = action.payload;
         },
 
@@ -77,6 +77,18 @@ export const adminReducer = createReducer(
         },
         clearMessage: state => {
             state.message = null;
+        },
+
+        loadUserReportRequest: (state) => {
+            state.loading = true;
+        },
+        loadUserReportSuccess: (state, action) => {
+            state.loading = false;
+            state.reports = action.payload;
+        },
+        loadUserReportFail: (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
         },
     }
 );

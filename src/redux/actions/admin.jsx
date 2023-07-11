@@ -1,4 +1,4 @@
-import { server } from '../store';
+import { server, server2 } from '../store';
 import axios from 'axios';
 
 export const getAllUsers = () => async dispatch => {
@@ -85,6 +85,10 @@ export const getAllOffers = () => async dispatch => {
   }
 }
 
+
+
+
+
 export const updateOffer = (offerId, offerName,
   landingPage,
   logo,
@@ -137,3 +141,27 @@ export const updateOffer = (offerId, offerName,
       });
     }
   }
+
+
+export const getUserReport = (startDate, endDate,offer, aff_sub2) => async (dispatch) => {
+  try {
+    dispatch({ type: "loadUserReportRequest" });
+
+    const { data } = await axios.post(
+      `${server2}/pushBackReportWithDates`,
+      { startDate, endDate, offer, aff_sub2 },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      }
+    );
+    dispatch({ type: "loadUserReportSuccess", payload: data.reports });
+  } catch (error) {
+    dispatch({
+      type: "loadUserReportFail",
+      payload: error.response.data.message,
+    });
+  }
+};

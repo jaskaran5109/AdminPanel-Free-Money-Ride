@@ -10,4 +10,5 @@ const store = configureStore({
 
 export default store;
 export const server = "https://free-money-ride.onrender.com/api/admin";
+export const server2 = "https://free-money-ride.onrender.com/api";
 // export const server = "http://localhost:4000/api/admin";
