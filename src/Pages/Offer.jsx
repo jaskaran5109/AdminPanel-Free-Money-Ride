@@ -1,8 +1,9 @@
-import { Avatar, Box, Button, Divider, Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerFooter, DrawerHeader, DrawerOverlay, FormLabel, Grid, GridItem, HStack, Heading, Image, Input, InputGroup, InputLeftElement, Popover, PopoverArrow, PopoverBody, PopoverCloseButton, PopoverContent, PopoverHeader, PopoverTrigger, Radio, RadioGroup, Select, Spinner, Stack, Switch, Table, TableCaption, TableContainer, Tbody, Td, Textarea, Th, Thead, Tooltip, Tr, useDisclosure } from '@chakra-ui/react'
+import { Avatar, Box, Button, Divider, Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerFooter, DrawerHeader, DrawerOverlay, FormLabel, Grid, GridItem, HStack, Heading, Icon, Image, Input, InputGroup, InputLeftElement, Popover, PopoverArrow, PopoverBody, PopoverCloseButton, PopoverContent, PopoverHeader, PopoverTrigger, Radio, RadioGroup, Select, Spinner, Stack, Switch, Table, TableCaption, TableContainer, Tbody, Td, Textarea, Th, Thead, Tooltip, Tr, useDisclosure } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
 import { AiFillDelete, AiTwotoneEdit } from 'react-icons/ai'
 import { BiSearchAlt, BiSolidUserDetail } from 'react-icons/bi'
 import { BsThreeDotsVertical } from 'react-icons/bs'
+import { FaChevronUp, FaChevronDown } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { countryListAllIsoData } from '../GeoData'
@@ -52,6 +53,12 @@ const Offer = () => {
     const [loading, setLoading] = useState(false)
     const [expiryDate, setExpiryDate] = useState('');
     const [conversionLimit, setConversionLimit] = useState(0);
+
+
+    const [sortOrder, setSortOrder] = useState('asc');
+    const [sortedColumn, setSortedColumn] = useState(null);
+    const [sortedOffers, setSortedOffers] = useState([]);
+
     const handleDateChange = (e) => {
         const newDate = moment(new Date(e.target.value)).format('YYYY-MM-DD');
         setExpiryDate(newDate);
@@ -140,7 +147,47 @@ const Offer = () => {
     const getOfferReports = (id) => {
         navigate(`offer/report/${id}`)
     }
+    const handleSortStatus = (column) => {
+        let order = 'asc';
+        if (sortedColumn === column && sortOrder === 'asc') {
+            order = 'desc';
+        }
 
+        setSortOrder(order);
+        setSortedColumn(column);
+
+        const sorted = [...offers].sort((a, b) => {
+            if (column === 'status') {
+                // Sort based on the "Status" column
+                const statusA = a.isEnabled ? 'Active' : 'Not Active';
+                const statusB = b.isEnabled ? 'Active' : 'Not Active';
+
+                if (order === 'asc') {
+                    return statusA.localeCompare(statusB);
+                } else {
+                    return statusB.localeCompare(statusA);
+                }
+            } else {
+                // Handle sorting for other columns if needed
+            }
+        });
+        setSortedOffers(sorted);
+    }
+
+    useEffect(() => {
+        if (offers) {
+            const sorted = [...offers].sort((a, b) => {
+                if (a.isEnabled && !b.isEnabled) {
+                    return -1; // Move active offers before non-active offers
+                } else if (!a.isEnabled && b.isEnabled) {
+                    return 1; // Move non-active offers after active offers
+                } else {
+                    return 0; // Maintain the existing order for offers with the same status
+                }
+            });
+            setSortedOffers(sorted);
+        }
+    }, [offers]);
     return (
         <Grid minH="100vh" templateColumns={['1fr']}>
             <Box p={['0', '8']} overflow="auto">
@@ -205,8 +252,15 @@ const Offer = () => {
                             </Box>}
                         </TableCaption>
                         <Thead>
-                            <Tr >
-                                <Th>Status</Th>
+                            <Tr>
+                                <Th alignItems={'center'} cursor={'pointer'} onClick={() => handleSortStatus('status')}>Status {sortedColumn === 'status' && (
+                                    <Icon
+                                        boxSize={3}
+                                        ml={2}
+                                        verticalAlign="middle"
+                                        as={sortOrder === 'asc' ? FaChevronUp : FaChevronDown}
+                                    />
+                                )}</Th>
                                 <Th>Name</Th>
                                 <Th>Poster</Th>
                                 <Th isNumeric>PO</Th>
@@ -221,24 +275,25 @@ const Offer = () => {
                             </Tr>
                         </Thead>
                         <Tbody>
-                            {!offerloading && offers && offers.filter(
-                                (item) =>
-                                    item.offerName.toLowerCase().includes(searchName.toLowerCase()) &&
-                                    item.externalId.toLowerCase().includes(searchAdvertiserId.toLowerCase())
-                            ).map(
-                                item =>
-                                (
-                                    <Row
-                                        key={item._id}
-                                        item={item}
-                                        offerDetailsHandler={offerDetailsHandler}
-                                        deleteOfferHandler={deleteOfferHandler}
-                                        loading={loading}
-                                        getOfferReports={getOfferReports}
-                                        truncateCellContent={truncateCellContent}
-                                    />
-                                )
-                            )}
+                            {!offerloading && offers &&
+                                sortedOffers.filter(
+                                    (item) =>
+                                        item.offerName.toLowerCase().includes(searchName.toLowerCase()) &&
+                                        item.externalId.toLowerCase().includes(searchAdvertiserId.toLowerCase())
+                                ).map(
+                                    item =>
+                                    (
+                                        <Row
+                                            key={item._id}
+                                            item={item}
+                                            offerDetailsHandler={offerDetailsHandler}
+                                            deleteOfferHandler={deleteOfferHandler}
+                                            loading={loading}
+                                            getOfferReports={getOfferReports}
+                                            truncateCellContent={truncateCellContent}
+                                        />
+                                    )
+                                )}
                         </Tbody>
                     </Table>
                 </TableContainer>
@@ -425,11 +480,11 @@ function Row({ item, offerDetailsHandler, loading, deleteOfferHandler, getOfferR
                                 <BsThreeDotsVertical />
                             </Button>
                         </PopoverTrigger>
-                        <PopoverContent style={{width:"100%"}}>
+                        <PopoverContent style={{ width: "100%" }}>
                             <PopoverHeader style={{ display: "flex", justifyContent: "space-between" }}>Actions</PopoverHeader>
                             <PopoverArrow />
                             <PopoverCloseButton />
-                            <PopoverBody style={{display:"flex",justifyContent:"space-between",padding:10}}><Button
+                            <PopoverBody style={{ display: "flex", justifyContent: "space-between", padding: 10 }}><Button
                                 isLoading={loading}
                                 color="puprle.600"
                                 onClick={() => getOfferReports(item.externalId)}
