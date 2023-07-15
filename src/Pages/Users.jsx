@@ -1,17 +1,20 @@
-import { Box, Button, Divider, Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerFooter, DrawerHeader, Spinner, DrawerOverlay, Grid, HStack, Heading, Input, InputGroup, InputLeftElement, Table, TableCaption, TableContainer, Tbody, Td, Th, Thead, Tr, useDisclosure, VStack } from '@chakra-ui/react'
-import axios from 'axios'
+import { Box, Button, Divider, Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerFooter, DrawerHeader, Spinner, DrawerOverlay, Grid, HStack, Heading, Input, InputGroup, InputLeftElement, Table, TableCaption, TableContainer, Tbody, Td, Th, Thead, Tr, useDisclosure, VStack, Popover, PopoverTrigger, PopoverContent, PopoverArrow, PopoverCloseButton, PopoverHeader, PopoverBody, FormControl, FormLabel, PopoverFooter } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
 import { BiSolidUserDetail } from 'react-icons/bi'
 import { useDispatch, useSelector } from 'react-redux'
 import { getAllAppUsers, getUserReport } from '../redux/actions/admin'
 import { JsonToExcel } from 'react-json-to-excel'
 import { BiSearchAlt } from 'react-icons/bi'
+import { getTotalAmountLeft, getTotalUserEarnings, getUserEarningsForTheDay } from '../redux/actions/user'
+import { format } from "date-fns";
+import NotificationPopOver from '../components/NotificationPopOver'
+
 
 const Users = () => {
     const dispatch = useDispatch();
     const { isOpen, onClose, onOpen } = useDisclosure();
     const { user, reports, loading: reportLoading, appUserloading } = useSelector((state) => state.admin)
-    const [loading, setLoading] = useState(false)
+    const { earnings, amounts, dayEarnings, loading: userLoading, message } = useSelector((state) => state.user)
 
     const [searchName, setSearchName] = useState('');
     const [searchUserId, setSearchUserId] = useState('');
@@ -22,6 +25,18 @@ const Users = () => {
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     const [userId, setUserId] = useState('')
+
+
+    const [selectedDate, setSelectedDate] = useState(new Date());
+
+    const handleChange = (event) => {
+        const inputValue = event.target.value;
+        const newDate = new Date(inputValue);
+        setSelectedDate(newDate);
+    };
+    function formatDate(date) {
+        return format(date, "yyyy-MM-dd");
+    }
 
     const getAllUsers = () => {
         dispatch(getAllAppUsers())
@@ -37,7 +52,14 @@ const Users = () => {
     }
     useEffect(() => {
         getAllUsers()
-    }, [loading])
+    }, [])
+    useEffect(() => {
+        dispatch(getTotalUserEarnings())
+        dispatch(getTotalUserEarnings())
+        dispatch(getTotalAmountLeft())
+        dispatch(getUserEarningsForTheDay(selectedDate))
+    }, [selectedDate, reportLoading])
+
     const calculateSumOfPrice = (data) => {
         let sum = 0;
 
@@ -56,9 +78,83 @@ const Users = () => {
 
         return sum;
     };
+    
     return (
         <Grid minH="100vh" templateColumns={['1fr']}>
             <Box p={['0', '8']} overflow="auto">
+                {!userLoading && <HStack style={{ justifyContent: "space-between" }}>
+                    <VStack>
+                        <Heading
+                            textTransform={'capitalize'}
+                            my="5"
+                            textAlign={['center', 'left']}
+                            size={18}
+                        >
+                            User Total Earnings
+                        </Heading>
+                        <Heading
+                            textTransform={'capitalize'}
+                            my="5"
+                            textAlign={['center', 'left']}
+                            size={18}
+                        >
+                            ₹{earnings && !reportLoading && earnings}
+                        </Heading>
+                    </VStack>
+                    <VStack>
+                        <Heading
+                            textTransform={'capitalize'}
+                            my="5"
+                            textAlign={['center', 'left']}
+                            size={18}
+                        >
+                            User Earnings for the day
+                        </Heading>
+                        <Input
+                            placeholder="Select Date and Time"
+                            size="md"
+                            type="date"
+                            value={formatDate(selectedDate)}
+                            onChange={handleChange}
+                        />
+                        {dayEarnings && !message ? <Heading
+                            textTransform={'capitalize'}
+                            my="5"
+                            textAlign={['center', 'left']}
+                            size={18}
+                        >
+                            ₹{dayEarnings && dayEarnings}
+                        </Heading> : <Heading
+                            textTransform={'capitalize'}
+                            my="5"
+                            textAlign={['center', 'left']}
+                            size={18}
+                        >
+                            {!dayEarnings && message && message}
+                        </Heading>}
+
+
+                    </VStack>
+                    <VStack>
+                        <Heading
+                            textTransform={'capitalize'}
+                            my="5"
+                            textAlign={['center', 'left']}
+                            size={18}
+                        >
+                            Users Total Amounts Left
+                        </Heading>
+                        <Heading
+                            textTransform={'capitalize'}
+                            my="5"
+                            textAlign={['center', 'left']}
+                            size={18}
+                        >
+                            ₹{amounts && amounts}
+                        </Heading>
+                    </VStack>
+                </HStack>}
+
                 <HStack style={{ justifyContent: "space-between" }}>
                     <Heading
                         textTransform={'uppercase'}
@@ -67,6 +163,7 @@ const Users = () => {
                     >
                         All App Users
                     </Heading>
+                    <NotificationPopOver/>
                     <Button> <JsonToExcel
                         title="Download Users"
                         data={user}

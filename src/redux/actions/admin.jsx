@@ -101,6 +101,7 @@ export const updateOffer = (offerId, offerName,
   externalId,
   advertiser,
   isEnabled,
+  isShopping,
   os,
   conversionLimit,
   expiryDate) => async dispatch => {
@@ -127,6 +128,7 @@ export const updateOffer = (offerId, offerName,
           externalId,
           advertiser,
           isEnabled,
+          isShopping,
           os,
           conversionLimit,
           expiryDate
@@ -143,7 +145,7 @@ export const updateOffer = (offerId, offerName,
   }
 
 
-export const getUserReport = (startDate, endDate,offer, aff_sub2) => async (dispatch) => {
+export const getUserReport = (startDate, endDate, offer, aff_sub2) => async (dispatch) => {
   try {
     dispatch({ type: "loadUserReportRequest" });
 
@@ -165,3 +167,30 @@ export const getUserReport = (startDate, endDate,offer, aff_sub2) => async (disp
     });
   }
 };
+
+
+
+export const sendNotification = (title, body, imageUrl) => async (dispatch) => {
+  try {
+    const config = {
+      headers: {
+        'Content-type': 'application/json',
+      },
+      withCredentials: true,
+    };
+    dispatch({ type: 'sendNotificationRequest' });
+    const { data } = await axios.post(
+      `${server}/send-notifications`,
+      {
+        title, body, imageUrl
+      },
+      config
+    );
+    dispatch({ type: 'sendNotificationSuccess', payload: data });
+  } catch (error) {
+    dispatch({
+      type: 'sendNotificationFail',
+      payload: error.response.data.message,
+    });
+  }
+}

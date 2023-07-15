@@ -49,6 +49,8 @@ const Offer = () => {
     const [advertiser, setAdvertiser] = useState('');
     const [isTrue, setIsTrue] = useState('');
     const [isEnabled, setIsEnabled] = useState(false);
+    const [isTrue2, setIsTrue2] = useState('');
+    const [isShopping, setIsShopping] = useState(false);
     const [os, setOs] = useState('');
     const [loading, setLoading] = useState(false)
     const [expiryDate, setExpiryDate] = useState('');
@@ -66,10 +68,13 @@ const Offer = () => {
 
     useEffect(() => {
         dispatch(getAllOffers())
-    }, [loading2, isTrue])
+    }, [loading2, isTrue, isTrue2])
     useEffect(() => {
         setIsEnabled(isTrue === 'true' ? true : false)
     }, [isTrue])
+    useEffect(() => {
+        setIsShopping(isTrue2 === 'true' ? true : false)
+    }, [isTrue2])
     const offerDetailsHandler = async (id) => {
         setLoading(true)
         try {
@@ -90,6 +95,8 @@ const Offer = () => {
             setExternalId(data.Offer.externalId)
             setIsTrue(data.Offer.isEnabled ? "true" : "false")
             setIsEnabled(data.Offer.isEnabled)
+            setIsTrue2(data.Offer.isShopping ? "true" : "false")
+            setIsShopping(data.Offer.isShopping)
             setOs(data.Offer.os)
             setConversionLimit(data.Offer.conversionLimit)
             setExpiryDate(data.Offer.expiryDate)
@@ -131,6 +138,7 @@ const Offer = () => {
                 externalId,
                 advertiser,
                 isEnabled,
+                isShopping,
                 os,
                 conversionLimit,
                 expiryDate))
@@ -399,6 +407,20 @@ const Offer = () => {
                                                     </Radio>
                                                 </Stack>
 
+                                            </RadioGroup>
+                                        </GridItem>
+
+                                        <GridItem w='100%'>
+                                            <FormLabel>Shopping</FormLabel>
+                                            <RadioGroup onChange={(value) => setIsTrue2(value)} value={isTrue2}>
+                                                <Stack direction="row" display="flex" justifyContent={'flex-start'} alignItems={'center'}>
+                                                    <Radio size="lg" value={'true'}>
+                                                        Yes
+                                                    </Radio>
+                                                    <Radio size="lg" value={'false'}>
+                                                        No
+                                                    </Radio>
+                                                </Stack>
                                             </RadioGroup>
                                         </GridItem>
                                         <GridItem w='100%'>

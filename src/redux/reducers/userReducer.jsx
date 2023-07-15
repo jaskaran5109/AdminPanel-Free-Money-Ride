@@ -80,5 +80,44 @@ export const userReducer = createReducer(
             state.loading = false;
             state.error = action.payload;
         },
+
+
+        totalEarningsRequest: state => {
+            state.loading = true;
+        },
+        totalEarningsSuccess: (state, action) => {
+            state.loading = false;
+            state.earnings = action.payload.totalEarnings;
+        },
+        totalEarningsFail: (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+        },
+
+        totalAmountLeftRequest: state => {
+            state.loading = true;
+        },
+        totalAmountLeftSuccess: (state, action) => {
+            state.loading = false;
+            state.amounts = action.payload.totalAmount;
+        },
+        totalAmountLeftFail: (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+        },
+
+
+        earningsForTheDayRequest: state => {
+            state.loading = true;
+        },
+        earningsForTheDaySuccess: (state, action) => {
+            state.loading = false;
+            state.dayEarnings = action.payload.totalEarnings;
+            state.message = action.payload.message
+        },
+        earningsForTheDayFail: (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+        },
     }
 );

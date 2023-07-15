@@ -22,6 +22,8 @@ const CreateOffer = () => {
     const [advertiser, setAdvertiser] = useState('');
     const [isTrue, setIsTrue] = useState('false');
     const [isEnabled, setIsEnabled] = useState(false);
+    const [isTrue2, setIsTrue2] = useState('false');
+    const [isShopping, setIsShopping] = useState(false);
     const [os, setOs] = useState('');
     const [loading, setLoading] = useState(false)
     const [expiryDate, setExpiryDate] = useState(moment().format('YYYY-MM-DD'));
@@ -33,6 +35,10 @@ const CreateOffer = () => {
     useEffect(() => {
         setIsEnabled(isTrue === 'true' ? true : false)
     }, [isTrue])
+
+    useEffect(() => {
+        setIsShopping(isTrue2 === 'true' ? true : false)
+    }, [isTrue2])
 
     const submitHandler = async (e) => {
         e.preventDefault();
@@ -59,6 +65,7 @@ const CreateOffer = () => {
                     externalId,
                     advertiser,
                     isEnabled,
+                    isShopping,
                     os,
                     conversionLimit,
                     expiryDate
@@ -170,6 +177,21 @@ const CreateOffer = () => {
                                 </Stack>
                             </RadioGroup>
                         </GridItem>
+
+                        <GridItem w='100%'>
+                            <FormLabel>Shopping</FormLabel>
+                            <RadioGroup onChange={(value) => setIsTrue2(value)} value={isTrue2}>
+                                <Stack direction="row" display="flex" justifyContent={'flex-start'} alignItems={'center'}>
+                                    <Radio size="lg" value={'true'}>
+                                        Yes
+                                    </Radio>
+                                    <Radio size="lg" value={'false'}>
+                                        No
+                                    </Radio>
+                                </Stack>
+                            </RadioGroup>
+                        </GridItem>
+
                         <GridItem w='100%'>
                             <FormLabel>Conversion Limit</FormLabel>
                             <Input value={conversionLimit} onChange={(e) => setConversionLimit(e.target.value)} />

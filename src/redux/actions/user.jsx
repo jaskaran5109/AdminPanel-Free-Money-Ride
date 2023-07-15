@@ -1,4 +1,4 @@
-import { server } from '../store';
+import { server, server2 } from '../store';
 import axios from 'axios';
 
 export const login = (email, password) => async dispatch => {
@@ -37,7 +37,7 @@ export const getMyProfile = () => async dispatch => {
     );
     dispatch({ type: 'loadUserSuccess', payload: data.user });
   } catch (error) {
-    dispatch({ type: 'loadUserFail', payload: error.response.data.message });
+    dispatch({ type: 'loadUserFail', payload: error.response.data.error });
   }
 };
 
@@ -96,3 +96,53 @@ export const resetPassword = (token, password) => async dispatch => {
     });
   }
 };
+
+export const getTotalUserEarnings = () => async dispatch => {
+  try {
+    dispatch({ type: 'totalEarningsRequest' });
+
+    const { data } = await axios.get(
+      `${server2}/all-user-earnings`,
+      {
+        withCredentials: true,
+      }
+    );
+    dispatch({ type: 'totalEarningsSuccess', payload: data });
+  } catch (error) {
+    dispatch({ type: 'totalEarningsFail', payload: error.response.data.error });
+  }
+}
+
+export const getTotalAmountLeft = () => async dispatch => {
+  try {
+    dispatch({ type: 'totalAmountLeftRequest' });
+
+    const { data } = await axios.get(
+      `${server2}/all-user-amount-left`,
+      {
+        withCredentials: true,
+      }
+    );
+    dispatch({ type: 'totalAmountLeftSuccess', payload: data });
+  } catch (error) {
+    dispatch({ type: 'totalAmountLeftFail', payload: error.response.data.error });
+  }
+}
+
+export const getUserEarningsForTheDay = (date) => async dispatch => {
+  try {
+    dispatch({ type: 'earningsForTheDayRequest' });
+
+    const { data } = await axios.post(
+      `${server2}/all-user-earnings-for-todays-day`, { date },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        withCredentials: true,
+      });
+    dispatch({ type: 'earningsForTheDaySuccess', payload: data });
+  } catch (error) {
+    dispatch({ type: 'earningsForTheDayFail', payload: error.response.data.error });
+  }
+}

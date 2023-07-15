@@ -90,5 +90,18 @@ export const adminReducer = createReducer(
             state.loading = false;
             state.error = action.payload;
         },
+
+
+        sendNotificationRequest: (state) => {
+            state.loading = true;
+        },
+        sendNotificationSuccess: (state, action) => {
+            state.loading = false;
+            state.message = action.payload.message;
+        },
+        sendNotificationFail: (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+        },
     }
 );
